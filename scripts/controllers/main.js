@@ -2015,7 +2015,26 @@ App.controller('Main', function ($scope, $timeout, $location, Api, tmhDynamicLoc
 
    let realReadyState = false;
 
+   // Optional `tileboard` event subscribe id — kept so we can swallow the
+   // Unauthorized result quietly when the current HA session lacks permission
+   // to subscribe to custom event types (non-admin users in modern HA).
+   let tileboardSubscribeId = null;
+
    Api.onError(function (data) {
+      if (
+         data
+         && typeof data.id === 'number'
+         && data.id === tileboardSubscribeId
+         && data.error
+         && data.error.code === 'unauthorized'
+      ) {
+         console.warn(
+            'TileBoard event channel unavailable (HA refused subscribe_events on '
+            + 'event_type "tileboard" — your user likely isn\'t admin). '
+            + 'CONFIG.events from HA → TileBoard is disabled for this session.',
+         );
+         return;
+      }
       console.error(data);
       addError(data.message);
    });
@@ -2025,7 +2044,7 @@ App.controller('Main', function ($scope, $timeout, $location, Api, tmhDynamicLoc
          debugLog('subscribed to state_changed', res);
       });
 
-      Api.subscribeEvents('tileboard', function (res) {
+      tileboardSubscribeId = Api.subscribeEvents('tileboard', function (res) {
          debugLog('subscribed to tileboard', res);
       });
 

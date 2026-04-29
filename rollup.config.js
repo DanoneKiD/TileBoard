@@ -19,6 +19,15 @@ let outputJsName = '';
 let outputCssName = '';
 const appPlugins = [];
 
+// Always copy the (potentially empty) custom.css stub. Won't overwrite an
+// existing customised file. Important in production too, otherwise a fresh
+// build's index.html references styles/custom.css and 404s.
+appPlugins.push(
+   copy([
+      { files: './styles/custom.css', dest: `./${outDir}/styles/`, options: { overwrite: false } },
+   ]),
+);
+
 if (isProduction) {
    outputJsName = 'app-[hash].js';
    outputCssName = 'styles-[hash][extname]';
@@ -27,10 +36,6 @@ if (isProduction) {
    outputJsName = 'app.js';
    outputCssName = 'styles[extname]';
    appPlugins.push(
-      copy([
-         // Copy over empty custom.css but don't overwrite in case user has customized it.
-         { files: './styles/custom.css', dest: `./${outDir}/styles/`, options: { overwrite: false } },
-      ]),
       serve({
          contentBase: outDir,
          port: 8080,

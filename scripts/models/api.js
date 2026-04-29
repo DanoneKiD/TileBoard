@@ -189,12 +189,11 @@ App.provider('Api', function () {
       $Api.prototype.subscribeEvents = function (events, callback) {
          const self = this;
          if (events && typeof events === 'object') {
-            events.forEach(function (event) {
-               self.subscribeEvent(event, callback);
+            return events.map(function (event) {
+               return self.subscribeEvent(event, callback);
             });
-         } else {
-            this.subscribeEvent(events, callback);
          }
+         return this.subscribeEvent(events, callback);
       };
 
       $Api.prototype.subscribeEvent = function (event, callback) {
@@ -205,6 +204,9 @@ App.provider('Api', function () {
          }
 
          this.send(data, callback);
+         // Return the request id so callers can correlate later results/errors
+         // (handy for swallowing Unauthorized noises on optional subscriptions).
+         return data.id;
       };
 
       $Api.prototype.getStates = function (callback) {
