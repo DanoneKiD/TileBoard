@@ -2366,6 +2366,57 @@ App.controller('Main', function ($scope, $timeout, $location, Api, tmhDynamicLoc
       updateView();
    };
 
+   // === Auto-return to a default page after inactivity ===
+   // Optional CONFIG.homeReset:
+   //   { timeout: 60 }                          → seconds; pageIndex defaults to 0
+   //   { timeout: 60, pageIndex: 2 }            → seconds + which page (numeric index)
+   //   { timeout: 60, pagePath: 'accueil' }     → match by page.path instead
+   // While the screensaver is shown the timer is paused so we don't fight with it.
+   const homeResetConf = CONFIG.homeReset;
+   if (homeResetConf && homeResetConf.timeout > 0) {
+      let lastInteraction = Date.now();
+
+      angular.element(window).bind(
+         'click keypress touchstart focus',
+         function () {
+            lastInteraction = Date.now();
+         },
+      );
+
+      setInterval(function () {
+         if ($scope.screensaverShown) {
+            // Reset the timer while the screensaver is active so we don't snap to
+            // home the moment the user just dismissed the screensaver.
+            lastInteraction = Date.now();
+            return;
+         }
+
+         const inactivitySec = (Date.now() - lastInteraction) / 1000;
+         if (inactivitySec < homeResetConf.timeout) {
+            return;
+         }
+
+         let targetPage;
+         if (homeResetConf.pagePath) {
+            targetPage = ($scope.pages || []).find(function (p) {
+               return p && p.path === homeResetConf.pagePath;
+            });
+         } else {
+            targetPage = ($scope.pages || [])[homeResetConf.pageIndex || 0];
+         }
+
+         if (!targetPage || $scope.isPageActive(targetPage)) {
+            // Already on the target page — just keep the timer alive.
+            lastInteraction = Date.now();
+            return;
+         }
+
+         $scope.openPage(targetPage);
+         lastInteraction = Date.now();
+         updateView();
+      }, 1000);
+   }
+
    function pingConnection () {
       if (!$scope.ready || realReadyState === false) {
          return;
