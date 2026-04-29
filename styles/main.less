@@ -973,6 +973,38 @@ body {
 }
 
 
+.item-leaflet-container {
+   position: absolute;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   top: 0;
+   overflow: hidden;
+   z-index: 2;
+   background: #ddd;
+
+   .leaflet-container {
+      width: 100%;
+      height: 100%;
+      background: #ddd;
+   }
+
+   .leaflet-control-attribution {
+      font-size: 9px;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 0 3px;
+   }
+
+   .-leaflet-tracker-marker .-leaflet-tracker-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #2962ff;
+      border: 2px solid #fff;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+   }
+}
+
 .item-slides {
    position: absolute;
    left: 0;

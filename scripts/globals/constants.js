@@ -7,6 +7,7 @@ export const CLASS_MICRO = '-micro-entity';
 export const GOOGLE_MAP = 'google';
 export const YANDEX_MAP = 'yandex';
 export const MAPBOX_MAP = 'mapbox';
+export const OSM_MAP = 'osm';
 
 export const TRANSITIONS = {
    ANIMATED: 'animated',

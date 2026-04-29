@@ -8,6 +8,7 @@ import './controllers/noty';
 import './controllers/screensaver';
 import '../styles/all.less';
 import '@mdi/font/scss/materialdesignicons.scss';
+import 'leaflet/dist/leaflet.css';
 
 function onConfigLoadOrError (error) {
    if (error) {

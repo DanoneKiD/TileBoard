@@ -55,7 +55,13 @@
    <div ng-if="item.type === TYPES.DEVICE_TRACKER"
         class="item-entity-container -below">
 
-      <div class="item-slides-container" ng-if="hasTrackerCoords(entity)">
+      <div class="item-leaflet-container"
+           ng-if="hasTrackerCoords(entity) && item.map === 'osm'"
+           leaflet-tracker="item"
+           entity="entity"></div>
+
+      <div class="item-slides-container"
+           ng-if="hasTrackerCoords(entity) && item.map !== 'osm'">
          <div class="item-slides" ng-class="trackerSlidesClass(item, entity)"
               ng-style="slidesStyles(item, $index)">
             <div class="item-slide -bg" ng-style="trackerBg(entity)"

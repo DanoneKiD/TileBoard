@@ -81,7 +81,7 @@ const config = {
          mode: 'extract',
          // Don't try to resolve CSS @imports.
          import: false,
-         sourceMap: true,
+         sourceMap: false,
          minimize: isProduction,
          url: {
             hash: 'assets/[name]-[hash][extname]',
