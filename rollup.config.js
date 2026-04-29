@@ -64,8 +64,8 @@ const config = {
          ],
       }),
       progress(),
-      commonjs(),
       resolve(),
+      commonjs(),
       babel({
          babelHelpers: 'bundled',
          exclude: [

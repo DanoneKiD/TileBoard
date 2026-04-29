@@ -78,9 +78,11 @@
     "angular-moment": "^1.3.0",
     "angularjs-gauge": "^2.2.0",
     "chart.js": "^2.9.4",
+    "hammerjs": "^2.0.8",
     "hls.js": "^0.14.17",
     "leaflet": "^1.9.4",
-    "lodash.mergewith": "^4.6.2"
+    "lodash.mergewith": "^4.6.2",
+    "moment": "^2.30.1"
   },
   "resolutions": {
     "chart.js": "2.9.4"

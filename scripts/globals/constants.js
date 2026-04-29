@@ -144,6 +144,7 @@ export const NOTIES_POSITIONS = {
 };
 
 export const ENTITY_SIZES = {
+   MICRO: 'micro',
    SMALL: 'small',
    NORMAL: 'normal',
    BIG: 'big',

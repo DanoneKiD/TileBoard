@@ -44,9 +44,30 @@ export default function () {
          }
 
          const initialZoom = (config.zoomLevels && config.zoomLevels[0]) || 16;
-         const tileUrl = config.tileLayer || 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-         const attribution = config.attribution
-            || '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+
+         // Map type presets. Override fully via item.tileLayer + item.attribution.
+         const MAP_PRESETS = {
+            standard: {
+               url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+               attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+               maxZoom: 19,
+            },
+            satellite: {
+               url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+               attribution: 'Tiles © Esri',
+               maxZoom: 19,
+            },
+            hybrid: {
+               url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+               attribution: 'Tiles © Esri',
+               maxZoom: 19,
+               labelsUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+            },
+         };
+         const mapType = config.mapType && MAP_PRESETS[config.mapType] ? config.mapType : 'standard';
+         const preset = MAP_PRESETS[mapType];
+         const tileUrl = config.tileLayer || preset.url;
+         const attribution = config.attribution || preset.attribution;
 
          // Make element focusable for Leaflet rendering (it needs explicit dimensions)
          $el.css({ width: '100%', height: '100%' });
@@ -64,9 +85,16 @@ export default function () {
          }).setView([initialLat, initialLng], initialZoom);
 
          L.tileLayer(tileUrl, {
-            maxZoom: 19,
+            maxZoom: preset.maxZoom,
             attribution,
          }).addTo(map);
+
+         // Hybrid mode overlays a transparent labels layer on top of the satellite layer.
+         if (mapType === 'hybrid' && preset.labelsUrl) {
+            L.tileLayer(preset.labelsUrl, {
+               maxZoom: preset.maxZoom,
+            }).addTo(map);
+         }
 
          // Use a divIcon so we don't need to ship Leaflet's default marker images.
          const markerIcon = L.divIcon({
