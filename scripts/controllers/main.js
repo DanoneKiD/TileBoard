@@ -2465,10 +2465,34 @@ App.controller('Main', function ($scope, $timeout, $location, Api, tmhDynamicLoc
    }
 
    if (CONFIG.pingConnection !== false) {
-      setInterval(pingConnection, 5000);
+      const PING_INTERVAL = 5000;
+      let lastPingTick = Date.now();
+
+      setInterval(function () {
+         const now = Date.now();
+         const drift = now - lastPingTick - PING_INTERVAL;
+         lastPingTick = now;
+
+         // If wall clock jumped well beyond the interval (device was sleeping
+         // and the timer was throttled), assume the WS is a zombie and force
+         // a reconnect immediately rather than waiting for the ping timeout.
+         if (drift > PING_INTERVAL) {
+            realReadyState = false;
+            Api.forceReconnect();
+            return;
+         }
+
+         pingConnection();
+      }, PING_INTERVAL);
 
       window.addEventListener('focus', function () {
          pingConnection();
+      });
+
+      document.addEventListener('visibilitychange', function () {
+         if (!document.hidden) {
+            pingConnection();
+         }
       });
    }
 });
